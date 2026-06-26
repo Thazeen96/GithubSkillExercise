@@ -1,15 +1,14 @@
 import express from 'express';
 import cors from 'cors';
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { getApiBaseUrl } from './config';
 import { createApiRouter } from './routes';
+import { connectDatabase, MONGODB_URI } from './database';
 
 dotenv.config();
 
 const app = express();
 const PORT = Number(process.env.PORT || 8000);
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/octofit_db';
 
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
@@ -24,8 +23,7 @@ app.get('/api/config', (_req, res) => {
 
 app.use('/api', createApiRouter());
 
-mongoose
-  .connect(MONGODB_URI)
+connectDatabase()
   .then(() => {
     console.log(`MongoDB connected to ${MONGODB_URI}`);
   })
